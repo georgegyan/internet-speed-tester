@@ -33,3 +33,31 @@ module.exports = {
   pingTest,
   downloadTest,
 };
+
+const uploadTest = (req, res) => {
+    let bytesReceived = 0;
+
+    const start = process.hrtime.bigint();
+
+    req.on("data", (chunk) => {
+        bytesReceived += chunk.length;
+    });
+
+    req.on("end", () => {
+        const end = process.hrtime.bigint();
+        const duration = Number(end - start) / 1_000_000; // Convert to milliseconds
+        const durationSeconds = duration / 1000;
+        const megabytes = bytesReceived / (1024 * 1024);
+        const megabits = megabytes * 8;
+        const speedMbps = durationSeconds > 0 ? megabits / durationSeconds : 0;
+
+        res.json({
+            success: true,
+            message: "Upload test completed",
+            bytesReceived,
+            megabytes: Number(megabytes.toFixed(2)),
+            durationMs: Number(duration.toFixed(2)),
+            speedMbps: Number(speedMbps.toFixed(2)),
+        });
+    });
+};
