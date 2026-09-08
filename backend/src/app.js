@@ -1,4 +1,5 @@
-import express from "express";
+const express = require("express");
+const testRoutes = require("./routes/test.routes");
 
 const app = express();
 
@@ -10,4 +11,6 @@ app.get("/", (req, res) => {
   });
 });
 
-export default app;
+app.use("/api/test", testRoutes);
+
+module.exports = app;
