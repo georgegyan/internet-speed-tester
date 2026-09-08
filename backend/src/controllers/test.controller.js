@@ -1,7 +1,6 @@
 const pingTest = async (req, res) => {
   const start = process.hrtime.bigint();
 
-  // Small async operation to measure server response timing
   await Promise.resolve();
 
   const end = process.hrtime.bigint();
@@ -16,6 +15,21 @@ const pingTest = async (req, res) => {
   });
 };
 
+const downloadTest = (req, res) => {
+  const sizeInMB = Number(req.query.size) || 10;
+
+  const buffer = Buffer.alloc(sizeInMB * 1024 * 1024, "A");
+
+  res.set({
+    "Content-Type": "application/octet-stream",
+    "Content-Length": buffer.length,
+    "Cache-Control": "no-store",
+  });
+
+  res.send(buffer);
+};
+
 module.exports = {
   pingTest,
+  downloadTest,
 };
