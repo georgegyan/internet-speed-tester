@@ -56,6 +56,3 @@ The API runs at `http://localhost:5000`.
 
 The `size` query parameter for the download endpoint is optional and defaults to `10` MB.
 
-## Current Status
-
-The project currently contains the initial backend API. Upload testing is implemented in the controller and will be completed as the project develops.
