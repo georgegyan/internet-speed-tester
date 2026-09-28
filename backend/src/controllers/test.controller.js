@@ -1,18 +1,37 @@
+const {
+  getHighResolutionTime,
+  calculateDurationMs,
+} = require("../services/test.service");
+
+const {
+  getHighResolutionTime,
+  calculateDurationMs,
+} = require("../services/test.service");
+
 const pingTest = async (req, res) => {
-  const start = process.hrtime.bigint();
+  try {
+    const start = getHighResolutionTime();
 
-  await Promise.resolve();
+    await Promise.resolve();
 
-  const end = process.hrtime.bigint();
+    const end = getHighResolutionTime();
 
-  const latency = Number(end - start) / 1_000_000;
+    const latency = calculateDurationMs(start, end);
 
-  res.json({
-    success: true,
-    message: "Ping test completed",
-    latency: Number(latency.toFixed(2)),
-    unit: "ms",
-  });
+    res.json({
+      success: true,
+      message: "Ping test completed",
+      latency: Number(latency.toFixed(2)),
+      unit: "ms",
+    });
+  } catch (error) {
+    console.error("Ping test error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Ping test failed",
+    });
+  }
 };
 
 const downloadTest = (req, res) => {
@@ -35,29 +54,44 @@ module.exports = {
 };
 
 const uploadTest = (req, res) => {
-    let bytesReceived = 0;
+  let bytesReceived = 0;
 
-    const start = process.hrtime.bigint();
+  const start = getHighResolutionTime();
 
-    req.on("data", (chunk) => {
-        bytesReceived += chunk.length;
+  req.on("data", (chunk) => {
+    bytesReceived += chunk.length;
+  });
+
+  req.on("end", () => {
+    const end = getHighResolutionTime();
+
+    const durationMs = calculateDurationMs(start, end);
+    const durationSeconds = durationMs / 1000;
+
+    const megabytes = bytesReceived / (1024 * 1024);
+    const megabits = megabytes * 8;
+
+    const speedMbps =
+      durationSeconds > 0
+        ? megabits / durationSeconds
+        : 0;
+
+    res.json({
+      success: true,
+      message: "Upload test completed",
+      bytesReceived,
+      megabytes: Number(megabytes.toFixed(2)),
+      durationMs: Number(durationMs.toFixed(2)),
+      speedMbps: Number(speedMbps.toFixed(2)),
     });
+  });
 
-    req.on("end", () => {
-        const end = process.hrtime.bigint();
-        const duration = Number(end - start) / 1_000_000; // Convert to milliseconds
-        const durationSeconds = duration / 1000;
-        const megabytes = bytesReceived / (1024 * 1024);
-        const megabits = megabytes * 8;
-        const speedMbps = durationSeconds > 0 ? megabits / durationSeconds : 0;
+  req.on("error", (error) => {
+    console.error("Upload test error:", error);
 
-        res.json({
-            success: true,
-            message: "Upload test completed",
-            bytesReceived,
-            megabytes: Number(megabytes.toFixed(2)),
-            durationMs: Number(duration.toFixed(2)),
-            speedMbps: Number(speedMbps.toFixed(2)),
-        });
+    res.status(500).json({
+      success: false,
+      message: "Upload test failed",
     });
+  });
 };
