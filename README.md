@@ -1,6 +1,6 @@
 # Internet Speed Tester
 
-A simple internet speed testing API built with Node.js and Express.
+A simple internet speed testing API built with Node.js and Express. .
 
 ## Project Structure
 
