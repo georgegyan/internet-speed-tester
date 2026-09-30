@@ -34,6 +34,17 @@ const downloadTest = (req, res) => {
   const sizeInMB =
     Number(req.query.size) || 10;
 
+    if (
+      Number.isNaN(sizeInMB) ||
+      sizeInMB <= 0 ||
+      sizeInMB > 100
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Size must be between 1 and 100 MB",
+      });
+    }
+
   const totalBytes =
     sizeInMB * 1024 * 1024;
 
@@ -50,11 +61,6 @@ const downloadTest = (req, res) => {
     createDownloadStream(sizeInMB);
 
   stream.pipe(res);
-};
-
-module.exports = {
-  pingTest,
-  downloadTest,
 };
 
 const uploadTest = (req, res) => {
@@ -98,4 +104,23 @@ const uploadTest = (req, res) => {
       message: "Upload test failed",
     });
   });
+};
+
+const getTestConfig = (req, res) => {
+  res.json({
+    success: true,
+    config: {
+      defaultDownloadSizeMB: 10,
+      maxDownloadSizeMB: 100,
+      uploadTestSizeMB: 10,
+      pingAttempts: 5,
+    },
+  });
+};
+
+module.exports = {
+  pingTest,
+  downloadTest,
+  uploadTest,
+  getTestConfig
 };
