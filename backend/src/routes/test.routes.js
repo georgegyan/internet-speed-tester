@@ -5,6 +5,7 @@ const {
   downloadTest,
   uploadTest,
   getTestConfig,
+  runTestSession,
 } = require("../controllers/test.controller");
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.get("/download", downloadTest);
 router.post("/upload", uploadTest);
 
 router.get("/config", getTestConfig);
+
+router.post("/session", runTestSession);
 
 module.exports = router;

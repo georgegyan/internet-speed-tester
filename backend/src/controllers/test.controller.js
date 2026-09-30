@@ -1,8 +1,7 @@
 const { getHighResolutionTime, calculateDurationMs } = require("../services/test.service");
-
 const { getHighResolutionTime, calculateDurationMs } = require("../services/test.service");
-
 const { createDownloadStream } = require("../services/download.service");
+const { createTestSession } =  require("../services/session.service");
 
 const pingTest = async (req, res) => {
   try {
@@ -28,6 +27,15 @@ const pingTest = async (req, res) => {
       message: "Ping test failed",
     });
   }
+};
+
+const runTestSession = (req, res) => {
+  const session = createTestSession();
+
+  res.json({
+    success: true,
+    ...session,
+  });
 };
 
 const downloadTest = (req, res) => {
@@ -122,5 +130,6 @@ module.exports = {
   pingTest,
   downloadTest,
   uploadTest,
-  getTestConfig
+  getTestConfig,
+  runTestSession
 };

@@ -19,7 +19,9 @@
     }
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
