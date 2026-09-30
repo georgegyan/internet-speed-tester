@@ -1,12 +1,8 @@
-const {
-  getHighResolutionTime,
-  calculateDurationMs,
-} = require("../services/test.service");
+const { getHighResolutionTime, calculateDurationMs } = require("../services/test.service");
 
-const {
-  getHighResolutionTime,
-  calculateDurationMs,
-} = require("../services/test.service");
+const { getHighResolutionTime, calculateDurationMs } = require("../services/test.service");
+
+const { createDownloadStream } = require("../services/download.service");
 
 const pingTest = async (req, res) => {
   try {
@@ -35,17 +31,25 @@ const pingTest = async (req, res) => {
 };
 
 const downloadTest = (req, res) => {
-  const sizeInMB = Number(req.query.size) || 10;
+  const sizeInMB =
+    Number(req.query.size) || 10;
 
-  const buffer = Buffer.alloc(sizeInMB * 1024 * 1024, "A");
+  const totalBytes =
+    sizeInMB * 1024 * 1024;
 
   res.set({
-    "Content-Type": "application/octet-stream",
-    "Content-Length": buffer.length,
+    "Content-Type":
+      "application/octet-stream",
+
+    "Content-Length": totalBytes,
+
     "Cache-Control": "no-store",
   });
 
-  res.send(buffer);
+  const stream =
+    createDownloadStream(sizeInMB);
+
+  stream.pipe(res);
 };
 
 module.exports = {
